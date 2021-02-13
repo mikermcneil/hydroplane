@@ -37,7 +37,7 @@ For convenience, this repo also includes a built-in way on top of Heroku that's 
 5. Customize the github action in this repo to make it point at your heroku app  (FUTURE: change the action so it uses a github secret for the app name too, so that this step can be simplified)
 6. Customize the github action in this repo to point at your repo (it has a failsafe at the top to prevent deploying on every 3rd party PR)
 7. Push something to master and it will deploy.
-
+8. Once it's working, login with `admin@example.com`/`abc123` and then change your password.
 
 ### Links
 
