@@ -27,9 +27,12 @@ For convenience, this repo also includes a built-in way on top of Heroku that's 
   - _you can set these in "Settings > Secrets" in the GitHub UI, as of like Feb 2021.  They'll probably change it at some point but, you've got this!  They're lurking in the UI somewhere._
   - `HEROKU_API_TOKEN_FOR_DEPLOYMENT` (your heroku api token)
   - `HEROKU_EMAIL_FOR_DEPLOYMENT` (your heroku login email)
-2. Create a heroku app
-3. Customize the github action in this repo to make it point at your heroku app  (FUTURE: change the action so it uses a github secret for the app name too, so that this step can be simplified)
-4. Push something to master.
+2. Create a heroku app, set up a database, add redis and Papertrail too, if you can be bothered.  Free tiers are fine.  (If you're using a SQL database, use a wipe script to set up the tables- e.g. set database url in `package.json` and then `sails run wipe`
+3. Optional: `npm install` your database adapter and configure it in config/env/production.js.  (This is set up to use sails-mysql in production already by default, so if you're cool with that, you don't need to install anything.)
+4. Configure the app to know its own URL in the production config (`baseUrl` and `sockets.onlyAllowOrigins`).  Note that other settings necessary for Heroku (secure cookies and trust proxy config) are already enabled.
+5. Customize the github action in this repo to make it point at your heroku app  (FUTURE: change the action so it uses a github secret for the app name too, so that this step can be simplified)
+6. Customize the github action in this repo to point at your repo (it has a failsafe at the top to prevent deploying on every 3rd party PR)
+7. Push something to master and it will deploy.
 
 
 ### Links
