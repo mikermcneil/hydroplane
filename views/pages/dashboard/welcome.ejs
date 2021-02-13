@@ -1,7 +1,7 @@
 <div id="welcome">
-  <ajax-form action="saveRoutes" :syncing.sync="syncing" :cloud-error.sync="cloudError" :form-data="formData" :form-rules="formRules" :form-errors.sync="formErrors" @submitted="submittedForm()">
+  <ajax-form action="updateRoutes" :syncing.sync="syncing" :cloud-error.sync="cloudError" :form-data="formData" :form-rules="formRules" :form-errors.sync="formErrors" @submitted="submittedForm()">
     <div class="form-group">
-      <textarea class="form-control" :class="[formErrors.routes ? 'is-invalid' : '']" v-model.trim="formData.routes" autocomplete="email" focus-first>
+      <textarea class="form-control" :class="[formErrors.routes ? 'is-invalid' : '']" v-model.trim="formData.routes" autocomplete="email" focus-first></textarea>
       <div class="invalid-feedback" v-if="formErrors.routes">Please provide a valid sails.config.routes dictionary.</div>
     </div>
 
@@ -39,7 +39,7 @@
   <!--  ╔═╗═╗ ╦╔═╗╔╦╗╔═╗╦  ╔═╗  ┌┬┐┌─┐┌┬┐┌─┐┬
         ║╣ ╔╩╦╝╠═╣║║║╠═╝║  ║╣   ││││ │ ││├─┤│
         ╚═╝╩ ╚═╩ ╩╩ ╩╩  ╩═╝╚═╝  ┴ ┴└─┘─┴┘┴ ┴┴─┘  -->
-  <modal class="example-modal" v-if="modal==='example'" @close="closeExampleModal()" v-cloak>
+  <!-- <modal class="example-modal" v-if="modal==='example'" @close="closeExampleModal()" v-cloak>
     <div class="modal-header">
       <h2 class="modal-title">Example modal</h2>
       <p class="modal-intro">At your leisure, please peruse this excerpt from a whale of a tale.</p>
@@ -121,6 +121,6 @@
       <button type="button" data-dismiss="modal" class="btn btn-info">Close</button>
       <button type="button" data-dismiss="modal" class="btn btn-outline-info">Cancel</button>
     </div>
-  </modal>
+  </modal> -->
 </div>
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>
