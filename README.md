@@ -8,9 +8,8 @@ a [Sails v1](https://sailsjs.com) application
 1. Fork this repo
 2. To make the autodeploy work, set GitHub Secrets:
   - _you can set these in "Settings > Secrets" in the GitHub UI, as of like Feb 2021.  They'll probably change it at some point but, you've got this!  They're lurking in the UI somewhere._
-  - _also, ignore the "bot user" terminology, this is just because I copied from Fleet and I'm lazy.  Use your own actual heroku login_
-  - `HEROKU_API_TOKEN_FOR_BOT_USER` (your heroku api token)
-  - `HEROKU_EMAIL_FOR_BOT_USER` (your heroku login email)
+  - `HEROKU_API_TOKEN_FOR_DEPLOYMENT` (your heroku api token)
+  - `HEROKU_EMAIL_FOR_DEPLOYMENT` (your heroku login email)
 3.
 
 ### Links
