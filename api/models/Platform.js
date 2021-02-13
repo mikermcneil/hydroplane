@@ -17,7 +17,7 @@ module.exports = {
       type: 'string',
       defaultsTo: `
 {
-  '/hello': async (req, res)=>{
+  '/webhooks/hello': async (req, res)=>{
     let html = await sails.helpers.http.get('https://example.com');
     res.ok(html);
   },
