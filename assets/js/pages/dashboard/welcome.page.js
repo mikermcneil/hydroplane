@@ -3,8 +3,20 @@ parasails.registerPage('welcome', {
   //  ║║║║║ ║ ║╠═╣║    ╚═╗ ║ ╠═╣ ║ ║╣
   //  ╩╝╚╝╩ ╩ ╩╩ ╩╩═╝  ╚═╝ ╩ ╩ ╩ ╩ ╚═╝
   data: {
-    modal: '',
-    pageLoadedAt: Date.now()
+
+    syncing: false,
+
+    formData: {
+      rememberMe: true,
+    },
+
+    formErrors: { /* … */ },
+
+    formRules: {
+      routes: { required: true },
+    },
+
+    cloudError: '',
   },
 
   //  ╦  ╦╔═╗╔═╗╔═╗╦ ╦╔═╗╦  ╔═╗
@@ -39,21 +51,29 @@ parasails.registerPage('welcome', {
   //  ╩╝╚╝ ╩ ╚═╝╩╚═╩ ╩╚═╝ ╩ ╩╚═╝╝╚╝╚═╝
   methods: {
 
-    clickOpenExampleModalButton: async function() {
-      this.goto('/welcome/hello');
-      // Or, without deep links, instead do:
-      // ```
-      // this.modal = 'example';
-      // ```
+    submittedForm: async function() {
+      // Redirect to the logged-in dashboard on success.
+      // > (Note that we re-enable the syncing state here.  This is on purpose--
+      // > to make sure the spinner stays there until the page navigation finishes.)
+      this.syncing = true;
+      window.location = '/';
     },
 
-    closeExampleModal: async function() {
-      this.goto('/welcome');
-      // Or, without deep links, instead do:
-      // ```
-      // this.modal = '';
-      // ```
-    },
+    // clickOpenExampleModalButton: async function() {
+    //   this.goto('/welcome/hello');
+    //   // Or, without deep links, instead do:
+    //   // ```
+    //   // this.modal = 'example';
+    //   // ```
+    // },
+
+    // closeExampleModal: async function() {
+    //   this.goto('/welcome');
+    //   // Or, without deep links, instead do:
+    //   // ```
+    //   // this.modal = '';
+    //   // ```
+    // },
 
   }
 });

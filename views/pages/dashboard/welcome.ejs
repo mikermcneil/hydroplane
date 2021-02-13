@@ -1,4 +1,17 @@
 <div id="welcome">
+  <ajax-form action="saveRoutes" :syncing.sync="syncing" :cloud-error.sync="cloudError" :form-data="formData" :form-rules="formRules" :form-errors.sync="formErrors" @submitted="submittedForm()">
+    <div class="form-group">
+      <textarea class="form-control" :class="[formErrors.routes ? 'is-invalid' : '']" v-model.trim="formData.routes" autocomplete="email" focus-first>
+      <div class="invalid-feedback" v-if="formErrors.routes">Please provide a valid sails.config.routes dictionary.</div>
+    </div>
+
+    <cloud-error v-if="cloudError"></cloud-error>
+    <div class="form-group">
+      <ajax-button :syncing="syncing" class="btn-dark btn-lg btn-block">Save</ajax-button>
+    </div>
+  </ajax-form>
+
+<!--
   <div class="container pt-5 pb-5">
     <h1>Welcome!</h1>
     <hr/>
@@ -8,6 +21,18 @@
       <button class="btn btn-outline-info ml-2" @click="clickOpenExampleModalButton()">Open a modal</button>
     </div>
   </div>
+
+
+
+  <div class="container pt-5 pb-5">
+    <h1>Welcome!</h1>
+    <hr/>
+    <p>This is a page that only logged-in people can visit. Don't you feel special? Try clicking on a button below to do some things you can't do when you're logged out.</p>
+    <div class="buttons">
+      <a class="btn btn-info" href="/account/profile">Update my email</a>
+      <button class="btn btn-outline-info ml-2" @click="clickOpenExampleModalButton()">Open a modal</button>
+    </div>
+  </div> -->
 
   <router-view></router-view>
 
