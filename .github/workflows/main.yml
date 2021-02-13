@@ -61,4 +61,4 @@ jobs:
     - run: echo "Deploying branch '${GITHUB_REF##*/}' to Heroku…"
     - run: git push heroku +${GITHUB_REF##*/}:master
     - name: 🌐 https://hydroplane.herokuapp.com/
-      run: echo '' && echo '--' && echo 'OK, done.  It should be live momentarily.' && echo '(if you get impatient, check the Heroku dashboard for status)' && echo && echo ' 🌐–•  https://fleetdm.com'
+      run: echo '' && echo '--' && echo 'OK, done.  It should be live momentarily.' && echo '(if you get impatient, check the Heroku dashboard for status)' && echo && echo ' 🌐–•  https://hydroplane.herokuapp.com/'
