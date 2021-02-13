@@ -56,9 +56,7 @@ module.exports = {
     if (0 === await Platform.count()) {
       await Platform.create({ routesJs });
     }//ﬁ
-    if (!sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime) {
-      sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime = Object.assign({}, sails.config.routes);
-    }//ﬁ
+    sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime = Object.assign({}, sails.config.routes);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     // Persist the new (unmerged) routes to the database.

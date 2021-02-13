@@ -14,6 +14,30 @@ module.exports = function defineCustomHook(sails) {
 
       sails.log.info('Initializing project hook... (`api/hooks/custom/`)');
 
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      sails.log('Applying hydroplane routes from the database…');
+
+      // FUTURE: Remove this dirty hack, see notes about the party pocket in update-routes
+      // (if you dare)
+      if (0 === await Platform.count()) {
+        await Platform.create({});
+      }//ﬁ
+      sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime = Object.assign({}, sails.config.routes);
+
+      // FUTURE: deduplicate the following into a helper (also get rid of the party pocket,
+      // see update-routes action for explanation)
+
+      // Reify the code string
+      let newlyParsedRoutes;
+      eval(`newlyParsedRoutes = ${(await Platform.find())[0].routesJs};`);
+
+      // Apply the routes to the running Sails app itself.
+      sails.router.flush(
+        Object.assign({}, sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime, newlyParsedRoutes)
+      );
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
       // Check Stripe/Sendgrid configuration (for billing and emails).
       var IMPORTANT_STRIPE_CONFIG = ['stripeSecret', 'stripePublishableKey'];
       var IMPORTANT_SENDGRID_CONFIG = ['sendgridSecret', 'internalEmailAddress'];
