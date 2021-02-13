@@ -1,8 +1,8 @@
 <div id="welcome">
   <ajax-form action="updateRoutes" :syncing.sync="syncing" :cloud-error.sync="cloudError" :form-data="formData" :form-rules="formRules" :form-errors.sync="formErrors" @submitted="submittedForm()">
     <div class="form-group">
-      <textarea class="form-control" :class="[formErrors.routes ? 'is-invalid' : '']" v-model.trim="formData.routes" autocomplete="email" focus-first></textarea>
-      <div class="invalid-feedback" v-if="formErrors.routes">Please provide a valid sails.config.routes dictionary.</div>
+      <textarea class="form-control" :class="[formErrors.routesJs ? 'is-invalid' : '']" v-model.trim="formData.routesJs" autocomplete="email" focus-first></textarea>
+      <div class="invalid-feedback" v-if="formErrors.routesJs">Please provide a valid sails.config.routes dictionary.</div>
     </div>
 
     <cloud-error v-if="cloudError"></cloud-error>
@@ -34,7 +34,7 @@
     </div>
   </div> -->
 
-  <router-view></router-view>
+  <!-- <router-view></router-view> -->
 
   <!--  ╔═╗═╗ ╦╔═╗╔╦╗╔═╗╦  ╔═╗  ┌┬┐┌─┐┌┬┐┌─┐┬
         ║╣ ╔╩╦╝╠═╣║║║╠═╝║  ║╣   ││││ │ ││├─┤│

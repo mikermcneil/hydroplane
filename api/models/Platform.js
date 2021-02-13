@@ -12,7 +12,17 @@ module.exports = {
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
-
+    routesJs: {
+      description: 'A JavaScript code string containing a dictionary expression in the style of sails.config.routes.',
+      type: 'string',
+      defaultsTo: `
+{
+  '/hello': async (req, res)=>{
+    let html = await sails.helpers.http.get('https://example.com');
+    res.ok(html);
+  },
+}`
+    },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
     //  ║╣ ║║║╠╩╗║╣  ║║╚═╗

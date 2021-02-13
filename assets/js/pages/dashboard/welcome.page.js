@@ -3,47 +3,24 @@ parasails.registerPage('welcome', {
   //  ║║║║║ ║ ║╠═╣║    ╚═╗ ║ ╠═╣ ║ ║╣
   //  ╩╝╚╝╩ ╩ ╩╩ ╩╩═╝  ╚═╝ ╩ ╩ ╩ ╩ ╚═╝
   data: {
-
     syncing: false,
-
-    formData: {
-      rememberMe: true,
-    },
-
-    formErrors: { /* … */ },
-
-    formRules: {
-      routes: { required: true },
-    },
-
     cloudError: '',
+    formData: {},
+    formErrors: {},
+    formRules: {
+      routesJs: { required: true },
+    },
   },
 
   //  ╦  ╦╔═╗╔═╗╔═╗╦ ╦╔═╗╦  ╔═╗
   //  ║  ║╠╣ ║╣ ║  ╚╦╝║  ║  ║╣
   //  ╩═╝╩╚  ╚═╝╚═╝ ╩ ╚═╝╩═╝╚═╝
   beforeMount: function() {
-    //…
+    // Prefill form
+    this.formData.routesJs = this.routesJs;
   },
   mounted: async function() {
     //…
-  },
-
-  //  ╦  ╦╦╦═╗╔╦╗╦ ╦╔═╗╦    ╔═╗╔═╗╔═╗╔═╗╔═╗
-  //  ╚╗╔╝║╠╦╝ ║ ║ ║╠═╣║    ╠═╝╠═╣║ ╦║╣ ╚═╗
-  //   ╚╝ ╩╩╚═ ╩ ╚═╝╩ ╩╩═╝  ╩  ╩ ╩╚═╝╚═╝╚═╝
-  // Configure deep-linking (aka client-side routing)
-  virtualPagesRegExp: /^\/welcome\/?([^\/]+)?\/?/,
-  afterNavigate: async function(virtualPageSlug){
-    // `virtualPageSlug` is determined by the regular expression above, which
-    // corresponds with `:unused?` in the server-side route for this page.
-    switch (virtualPageSlug) {
-      case 'hello':
-        this.modal = 'example';
-        break;
-      default:
-        this.modal = '';
-    }
   },
 
   //  ╦╔╗╔╔╦╗╔═╗╦═╗╔═╗╔═╗╔╦╗╦╔═╗╔╗╔╔═╗

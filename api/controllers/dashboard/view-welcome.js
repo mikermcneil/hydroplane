@@ -19,10 +19,18 @@ module.exports = {
 
   fn: async function () {
 
-    // TODO: fetch routes from database
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // Don't look too closely at this unless you want to be disappointed.
+    // This business here is a dirty hack, because trying to do this as quickly as possible.
+    // (The right way to do this is a hook.)
+    if (0 === await Platform.count()) {
+      await Platform.create({});
+    }//ﬁ
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    // Fetch routes from database and pass them down to the view for prefilling.
     return {
-      routes: ''
+      routesJs: (await Platform.find())[0].routesJs
     };
 
   }
