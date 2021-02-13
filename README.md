@@ -14,7 +14,7 @@ It is for internal automations.
 2. Deploy it, using whatever database you like
 
 ##### Things you won't need:
-- You will only need one compute instance, so you can get away without Redis this time if you want.
+- You will only need one compute instance, so you can get away without Redis this time if you want.  (But setting up Redis will mean you won't get randomly logged out, which is nice.  I would set up Redis.)
 - You probably won't need password reset or contact form emails, so you can skip Mailgun.
 - Unless you're trying to charge for this, you won't need payments either, so skip Stripe.
 
