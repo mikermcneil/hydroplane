@@ -19,7 +19,11 @@ module.exports = {
 
   fn: async function () {
 
-    return {};
+    // TODO: fetch routes from database
+
+    return {
+      routes: ''
+    };
 
   }
 
