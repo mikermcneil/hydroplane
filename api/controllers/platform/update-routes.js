@@ -18,7 +18,7 @@ module.exports = {
   },
 
 
-  fn: async function ({ routes }) {
+  fn: async function ({ routes: routesJs }) {
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // FUTURE: Replace this with something more complete that lets you use action definitions.
@@ -29,6 +29,9 @@ module.exports = {
     // the easy way.
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    let newlyParsedRoutes;
+    eval(`newlyParsedRoutes = ${routesJs};`);
+
     if (!sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime) {
       // This business here is a dirty hack, so we'll just shove the original routes into
       // Mike's party pocket™, because trying to do this as quickly as possible.
@@ -36,7 +39,7 @@ module.exports = {
       sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime = Object.assign({}, sails.config.routes);
     }
 
-    let newRoutes = Object.assign({}, sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime, routes);
+    let newRoutes = Object.assign({}, sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime, newlyParsedRoutes);
 
     // TODO persist to database, at least
 
