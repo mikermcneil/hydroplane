@@ -9,6 +9,8 @@ It is for internal automations.
 
 ![image](https://user-images.githubusercontent.com/618009/107864862-4c215e80-6e26-11eb-8f6c-5f0590b73285.png)
 ![image](https://user-images.githubusercontent.com/618009/107864861-47f54100-6e26-11eb-99b6-88f10b2fe7d3.png)
+![image](https://user-images.githubusercontent.com/618009/107865116-fd28f880-6e28-11eb-9d3a-bd96a4bbe7d4.png)
+![image](https://user-images.githubusercontent.com/618009/107865120-10d45f00-6e29-11eb-8bfe-504142aa1434.png)
 
 
 The idea is you change the routes in that textarea and then hit save and then it's live.
