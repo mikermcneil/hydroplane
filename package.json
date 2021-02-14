@@ -36,7 +36,7 @@
     "url": "git://github.com/mikermcneil/hydroplane.git"
   },
   "author": "mikermcneil",
-  "license": "",
+  "license": "MIT",
   "engines": {
     "node": "^14.14"
   }
