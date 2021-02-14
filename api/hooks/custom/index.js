@@ -15,38 +15,31 @@ module.exports = function defineCustomHook(sails) {
       sails.log.info('Initializing project hook... (`api/hooks/custom/`)');
 
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      sails.after('hook:orm:loaded', ()=>{
-        // This IIFE is here because event handlers for the core events in the Sails framework
-        // don't have smart handling of async functions.  It'd technically still work, but this
-        // is open source after all and I want to make sure and use best practices for error handling.
-        // -mikermcneil
-        (async()=>{
+      // We use 'lifted' instead of 'hook:orm:loaded' to play nice with --drop, which won't
+      // have completely finished with automigrations.  (Sails is eager about lifting so that
+      // you don't have to wait as long to test things when there's a big dataset.)
+      sails.after('lifted', async()=>{
 
-          sails.log('Applying hydroplane routes from the database…');
+        sails.log('Applying hydroplane routes from the database…');
 
-          // FUTURE: Remove this dirty hack, see notes about the party pocket in update-routes
-          // (if you dare)
-          if (0 === await Platform.count()) {
-            await Platform.create({});
-          }//ﬁ
-          sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime = Object.assign({}, sails.config.routes);
+        // FUTURE: Remove this dirty hack, see notes about the party pocket in update-routes
+        // (if you dare)
+        if (0 === await Platform.count()) {
+          await Platform.create({});
+        }//ﬁ
+        sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime = Object.assign({}, sails.config.routes);
 
-          // FUTURE: deduplicate the following into a helper (also get rid of the party pocket,
-          // see update-routes action for explanation)
+        // FUTURE: deduplicate the following into a helper (also get rid of the party pocket,
+        // see update-routes action for explanation)
 
-          // Reify the code string
-          let newlyParsedRoutes;
-          eval(`newlyParsedRoutes = ${(await Platform.find())[0].routesJs};`);
+        // Reify the code string
+        let newlyParsedRoutes;
+        eval(`newlyParsedRoutes = ${(await Platform.find())[0].routesJs};`);
 
-          // Apply the routes to the running Sails app itself.
-          sails.router.flush(
-            Object.assign({}, sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime, newlyParsedRoutes)
-          );
-        })()
-        .catch((err)=>{
-          // If we're here, the app ain't starting anyway.  Crash it.
-          throw err;
-        });//†
+        // Apply the routes to the running Sails app itself.
+        sails.router.flush(
+          Object.assign({}, sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime, newlyParsedRoutes)
+        );
       });//œ
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
