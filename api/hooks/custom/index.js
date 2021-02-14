@@ -15,26 +15,39 @@ module.exports = function defineCustomHook(sails) {
       sails.log.info('Initializing project hook... (`api/hooks/custom/`)');
 
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      sails.log('Applying hydroplane routes from the database…');
+      sails.after('hook:orm:loaded', ()=>{
+        // This IIFE is here because event handlers for the core events in the Sails framework
+        // don't have smart handling of async functions.  It'd technically still work, but this
+        // is open source after all and I want to make sure and use best practices for error handling.
+        // -mikermcneil
+        (async()=>{
 
-      // FUTURE: Remove this dirty hack, see notes about the party pocket in update-routes
-      // (if you dare)
-      if (0 === await Platform.count()) {
-        await Platform.create({});
-      }//ﬁ
-      sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime = Object.assign({}, sails.config.routes);
+          sails.log('Applying hydroplane routes from the database…');
 
-      // FUTURE: deduplicate the following into a helper (also get rid of the party pocket,
-      // see update-routes action for explanation)
+          // FUTURE: Remove this dirty hack, see notes about the party pocket in update-routes
+          // (if you dare)
+          if (0 === await Platform.count()) {
+            await Platform.create({});
+          }//ﬁ
+          sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime = Object.assign({}, sails.config.routes);
 
-      // Reify the code string
-      let newlyParsedRoutes;
-      eval(`newlyParsedRoutes = ${(await Platform.find())[0].routesJs};`);
+          // FUTURE: deduplicate the following into a helper (also get rid of the party pocket,
+          // see update-routes action for explanation)
 
-      // Apply the routes to the running Sails app itself.
-      sails.router.flush(
-        Object.assign({}, sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime, newlyParsedRoutes)
-      );
+          // Reify the code string
+          let newlyParsedRoutes;
+          eval(`newlyParsedRoutes = ${(await Platform.find())[0].routesJs};`);
+
+          // Apply the routes to the running Sails app itself.
+          sails.router.flush(
+            Object.assign({}, sails._mikesPartyPocketWithTheOriginalRoutesAtLiftTime, newlyParsedRoutes)
+          );
+        })()
+        .catch((err)=>{
+          // If we're here, the app ain't starting anyway.  Crash it.
+          throw err;
+        });//†
+      });//œ
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
