@@ -6,6 +6,13 @@ This is not something you should use for production web traffic.  I built it in 
 
 It is for internal automations.
 
+
+![image](https://user-images.githubusercontent.com/618009/107864862-4c215e80-6e26-11eb-8f6c-5f0590b73285.png)
+![image](https://user-images.githubusercontent.com/618009/107864861-47f54100-6e26-11eb-99b6-88f10b2fe7d3.png)
+
+
+The idea is you change the routes in that textarea and then hit save and then it's live.
+
 (a [Sails v1](https://sailsjs.com) application)
 
 
