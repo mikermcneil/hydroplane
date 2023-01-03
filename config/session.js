@@ -18,7 +18,7 @@ module.exports.session = {
   * of your users, forcing them to log in again.                             *
   *                                                                          *
   ***************************************************************************/
-  secret: '2736c9fc5266b52fefe7f0ca5e7cb31b',
+  secret: 'dev-only-overwrite-this-setting-in-prod',
 
 
   /***************************************************************************
