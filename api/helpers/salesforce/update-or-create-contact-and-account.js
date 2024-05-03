@@ -45,13 +45,20 @@ module.exports = {
 
 
   fn: async function ({emailAddress, linkedinUrl, firstName, lastName, organization, primaryBuyingSituation, psychologicalStage}) {
+
     require('assert')(sails.config.custom.salesforceIntegrationUsername);
     require('assert')(sails.config.custom.salesforceIntegrationPasskey);
     require('assert')(sails.config.custom.iqSecret);
+    require('assert')(sails.config.custom.RX_PROTOCOL_AND_COMMON_SUBDOMAINS);
 
 
     if(!emailAddress && !linkedinUrl){
       throw new Error('UsageError: when updating or creating a contact and account in salesforce, either an email or linkedInUrl is required.');
+    }
+
+    if(linkedinUrl){
+      // If linkedinUrl was provided, strip the protocol and subdomain from the URL.
+      linkedinUrl = linkedinUrl.replace(sails.config.custom.RX_PROTOCOL_AND_COMMON_SUBDOMAINS, '');
     }
     // Send the information we have to the enrichment helper.
     let enrichmentData = await sails.helpers.iq.getEnriched(emailAddress, linkedinUrl, firstName, lastName, organization);
@@ -68,7 +75,7 @@ module.exports = {
     await salesforceConnection.login(sails.config.custom.salesforceIntegrationUsername, sails.config.custom.salesforceIntegrationPasskey);
 
     let salesforceAccountId;
-    if(!enrichmentData.employer || !enrichmentData.employer.emailDomain) {
+    if(!enrichmentData.employer || !enrichmentData.employer.emailDomain || !enrichmentData.employer.organization) {
       // Special sacraficial meat cave where the contacts with no organization go.
       // https://fleetdm.lightning.force.com/lightning/r/Account/0014x000025JC8DAAW/view
       salesforceAccountId = '0014x000025JC8DAAW';
@@ -150,13 +157,13 @@ module.exports = {
 
     let salesforceContactId;
     let valuesToSet = {};
-    if(emailAddress || enrichmentData.person){
-      valuesToSet.Email = emailAddress || enrichmentData.person.emailAddress;
+    if(emailAddress){
+      valuesToSet.Email = emailAddress;
     }
-    if(linkedinUrl || enrichmentData.person){
+    if(linkedinUrl || (enrichmentData.person && enrichmentData.person.linkedinUrl)){
       valuesToSet.LinkedIn_profile__c = linkedinUrl || enrichmentData.person.linkedinUrl;// eslint-disable-line camelcase
     }
-    if(enrichmentData.person){
+    if(enrichmentData.person && enrichmentData.person.title){
       valuesToSet.Title = enrichmentData.person.title;
     }
     if(primaryBuyingSituation) {
