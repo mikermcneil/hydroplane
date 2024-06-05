@@ -236,7 +236,7 @@ module.exports = {
         sails.log.info(`Failed to enrich (${emailAddress},${linkedinUrl},${firstName},${lastName},${organization}):`,err);
         return undefined;
       });
-      if (matchingCompanyPageInfo) {
+      if (matchingCompanyPageInfo && matchingCompanyPageInfo.website) {
         let parsedCompanyEmailDomain = require('url').parse(matchingCompanyPageInfo.website);
         // If a company's website does not include the protocol (https://), url.parse will return null as the hostname, if this happens, we'll use the href value returned instead.
         let emailDomain = parsedCompanyEmailDomain.hostname ? parsedCompanyEmailDomain.hostname.replace(sails.config.custom.RX_PROTOCOL_AND_COMMON_SUBDOMAINS,'') : parsedCompanyEmailDomain.href.replace(sails.config.custom.RX_PROTOCOL_AND_COMMON_SUBDOMAINS,'');
