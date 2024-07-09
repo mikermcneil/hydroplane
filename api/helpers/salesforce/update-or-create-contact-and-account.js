@@ -31,7 +31,6 @@ module.exports = {
     },
     leadSource: {
       type: 'string',
-      required: true,
       isIn: [
         'Website - Contact forms',
         'Website - Sign up',
@@ -187,6 +186,10 @@ module.exports = {
         // console.log('New account created!', salesforceAccountId);
       }//ﬁ
 
+      // Only set leadSource on new contact records.
+      if(leadSource) {
+        valuesToSet.LeadSource = leadSource;
+      }
       // console.log(`creating new Contact record.`)
       // Create a new Contact record for this person.
       let newContactRecord = await salesforceConnection.sobject('Contact')
@@ -195,7 +198,6 @@ module.exports = {
         OwnerId: salesforceAccountOwnerId,
         FirstName: firstName,
         LastName: lastName,
-        LeadSource: leadSource,
         ...valuesToSet,
       });
       // console.log(`Created ${newContactRecord.id}`);
