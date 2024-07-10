@@ -1,0 +1,33 @@
+name: Test changes
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # Set the Node.js version
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+
+    # Download dependencies (including dev deps)
+    - run: npm install
+
+    # Run sanity checks
+    - run: npm test
