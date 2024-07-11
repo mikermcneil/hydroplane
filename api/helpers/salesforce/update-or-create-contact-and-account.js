@@ -75,6 +75,7 @@ module.exports = {
 
     let salesforceContactId;
     let salesforceAccountId;
+    let salesforceAccountOwnerId;
 
     // Build a dictionary of values we'll update/create a contact record with.
     let valuesToSet = {};
@@ -116,6 +117,41 @@ module.exports = {
         ...valuesToSet,
       });
       salesforceAccountId = existingContactRecord.AccountId;
+      // Look up the account to see if it is owned by the integrations admin user, if it is, we'll round robin it.
+      let accountRecord = await sails.helpers.flow.build(async ()=>{
+        return await salesforceConnection.sobject('Account')
+        .retrieve(salesforceAccountId);
+      }).intercept((err)=>{
+        return new Error(`When attempting to look up an Account record (ID: ${salesforceAccountId}), An error occured when retreiving the specified record. Error: ${err}`);
+      });
+      salesforceAccountOwnerId = accountRecord.OwnerId;
+      if(salesforceAccountOwnerId === '0054x00000735wDAAQ' && salesforceAccountId !== '0014x000025JC8DAAW') {
+        // Get all round robin users.
+        let roundRobinUsers = await salesforceConnection.sobject('User')
+        .find({
+          AE_Round_robin__c: true,// eslint-disable-line camelcase
+        });
+        // Get the user with the earliest round robin timestamp.
+        let userWithEarliestAssignTimeStamp = _.sortBy(roundRobinUsers, 'AE_Account_Assignment_round_robin__c')[0];
+
+        let today = new Date();
+        let nowOn = today.toISOString().replace('Z', '+0000');
+        // Update the salesforceAccountOwnerId value to be the ID of the next user in the round robin.
+        salesforceAccountOwnerId = userWithEarliestAssignTimeStamp.Id;
+        // Update this user to put them at the bottom of the round robin list.
+        await salesforceConnection.sobject('User')
+        .update({
+          Id: salesforceAccountOwnerId,
+          // eslint-disable-next-line camelcase
+          AE_Account_Assignment_round_robin__c: nowOn
+        });
+        // Reassign the account to the new owner.
+        await salesforceConnection.sobject('Account')
+        .update({
+          Id: salesforceAccountId,
+          OwnerId: salesforceAccountOwnerId
+        });
+      }
       // console.log(`${salesforceContactId} updated!`);
     } else {
       // Otherwise, we'll enrich the information we have, and check for an existing account.
@@ -133,7 +169,6 @@ module.exports = {
       if(enrichmentData.person && enrichmentData.person.title){
         valuesToSet.Title = enrichmentData.person.title;
       }
-      let salesforceAccountOwnerId;
       if(!enrichmentData.employer || !enrichmentData.employer.emailDomain || !enrichmentData.employer.organization) {
         // Special sacrificial meat cave where the contacts with no organization go.
         // https://fleetdm.lightning.force.com/lightning/r/Account/0014x000025JC8DAAW/view
