@@ -75,7 +75,6 @@ module.exports = {
 
     let salesforceContactId;
     let salesforceAccountId;
-    let salesforceAccountOwnerId;
 
     // Build a dictionary of values we'll update/create a contact record with.
     let valuesToSet = {};
@@ -91,7 +90,6 @@ module.exports = {
     if(psychologicalStage) {
       valuesToSet.Stage__c = psychologicalStage;// eslint-disable-line camelcase
     }
-
 
     let existingContactRecord;
     // Search for an existing Contact record using the provided email address or linkedIn profile URL.
@@ -117,41 +115,6 @@ module.exports = {
         ...valuesToSet,
       });
       salesforceAccountId = existingContactRecord.AccountId;
-      // Look up the account to see if it is owned by the integrations admin user, if it is, we'll round robin it.
-      let accountRecord = await sails.helpers.flow.build(async ()=>{
-        return await salesforceConnection.sobject('Account')
-        .retrieve(salesforceAccountId);
-      }).intercept((err)=>{
-        return new Error(`When attempting to look up an Account record (ID: ${salesforceAccountId}), An error occured when retreiving the specified record. Error: ${err}`);
-      });
-      salesforceAccountOwnerId = accountRecord.OwnerId;
-      if(salesforceAccountOwnerId === '0054x00000735wDAAQ' && salesforceAccountId !== '0014x000025JC8DAAW') {
-        // Get all round robin users.
-        let roundRobinUsers = await salesforceConnection.sobject('User')
-        .find({
-          AE_Round_robin__c: true,// eslint-disable-line camelcase
-        });
-        // Get the user with the earliest round robin timestamp.
-        let userWithEarliestAssignTimeStamp = _.sortBy(roundRobinUsers, 'AE_Account_Assignment_round_robin__c')[0];
-
-        let today = new Date();
-        let nowOn = today.toISOString().replace('Z', '+0000');
-        // Update the salesforceAccountOwnerId value to be the ID of the next user in the round robin.
-        salesforceAccountOwnerId = userWithEarliestAssignTimeStamp.Id;
-        // Update this user to put them at the bottom of the round robin list.
-        await salesforceConnection.sobject('User')
-        .update({
-          Id: salesforceAccountOwnerId,
-          // eslint-disable-next-line camelcase
-          AE_Account_Assignment_round_robin__c: nowOn
-        });
-        // Reassign the account to the new owner.
-        await salesforceConnection.sobject('Account')
-        .update({
-          Id: salesforceAccountId,
-          OwnerId: salesforceAccountOwnerId
-        });
-      }
       // console.log(`${salesforceContactId} updated!`);
     } else {
       // Otherwise, we'll enrich the information we have, and check for an existing account.
@@ -169,6 +132,7 @@ module.exports = {
       if(enrichmentData.person && enrichmentData.person.title){
         valuesToSet.Title = enrichmentData.person.title;
       }
+      let salesforceAccountOwnerId;
       if(!enrichmentData.employer || !enrichmentData.employer.emailDomain || !enrichmentData.employer.organization) {
         // Special sacrificial meat cave where the contacts with no organization go.
         // https://fleetdm.lightning.force.com/lightning/r/Account/0014x000025JC8DAAW/view
@@ -190,63 +154,38 @@ module.exports = {
           });
         }
         // console.log(existingAccountRecord);
-        // If we found an exisitng account and it is not owned by the integrations admin, we'll use assign the new contact to the account owner.
-        if(existingAccountRecord && existingAccountRecord.OwnerId !== '0054x00000735wDAAQ') {
+        // If we found an exisiting account, we'll assign the new contact to the account owner.
+        if(existingAccountRecord) {
           // Store the ID of the Account record we found.
           salesforceAccountId = existingAccountRecord.Id;
           salesforceAccountOwnerId = existingAccountRecord.OwnerId;
-          // console.log('exising account found!', salesforceAccountId);
+          // console.log('existing account found!', salesforceAccountId);
         } else {
-          // If we didn't find an existing record, or found one onwned by the integrations admin or a disabled user, we'll round robin it between the AE's Salesforce users.
-          let roundRobinUsers = await salesforceConnection.sobject('User')
-          .find({
-            AE_Round_robin__c: true,// eslint-disable-line camelcase
-          });
-          let userWithEarliestAssignTimeStamp = _.sortBy(roundRobinUsers, 'AE_Account_Assignment_round_robin__c')[0];
-
+          // If no existing account record was found, create a new one, and assign it to the "Integrations Admin" user.
+          salesforceAccountOwnerId = '0054x00000735wDAAQ';// « "Integrations admin" user.
+          // Create a timestamp to use for the new account's assigned date.
           let today = new Date();
           let nowOn = today.toISOString().replace('Z', '+0000');
-          // Update the accountOwnerId value to be the ID of the next user in the round robin.
-          salesforceAccountOwnerId = userWithEarliestAssignTimeStamp.Id;
-          // Update this user to put them at the bottom of the round robin list.
-          await salesforceConnection.sobject('User')
-          .update({
-            Id: salesforceAccountOwnerId,
+
+          let newAccountRecord = await salesforceConnection.sobject('Account')
+          .create({
+            Account_Assigned_date__c: nowOn,// eslint-disable-line camelcase
             // eslint-disable-next-line camelcase
-            AE_Account_Assignment_round_robin__c: nowOn
+            Current_Assignment_Reason__c: 'Inbound Lead',// TODO verify that this matters. if not, do not set it.
+            Prospect_Status__c: 'Assigned',// eslint-disable-line camelcase
+
+            Name: enrichmentData.employer.organization,// IFWMIH: We know organization exists
+            Website: enrichmentData.employer.emailDomain,
+            LinkedIn_company_URL__c: enrichmentData.employer.linkedinCompanyPageUrl,// eslint-disable-line camelcase
+            NumberOfEmployees: enrichmentData.employer.numberOfEmployees,
+            OwnerId: salesforceAccountOwnerId
           });
-
-
-          if(existingAccountRecord){
-            // If we found an existing Account record owned by the integrations admin user account, reassign it to the new owner.
-            salesforceAccountId = existingAccountRecord.Id;
-            await salesforceConnection.sobject('Account')
-            .update({
-              Id: salesforceAccountId,
-              OwnerId: salesforceAccountOwnerId
-            });
-          } else {
-            // If no existing account record was found, create a new one.
-            let newAccountRecord = await salesforceConnection.sobject('Account')
-            .create({
-              OwnerId: salesforceAccountOwnerId,
-              Account_Assigned_date__c: nowOn,// eslint-disable-line camelcase
-              // eslint-disable-next-line camelcase
-              Current_Assignment_Reason__c: 'Inbound Lead',// TODO verify that this matters. if not, do not set it.
-              Prospect_Status__c: 'Assigned',// eslint-disable-line camelcase
-
-              Name: enrichmentData.employer.organization,// IFWMIH: We know organization exists
-              Website: enrichmentData.employer.emailDomain,
-              LinkedIn_company_URL__c: enrichmentData.employer.linkedinCompanyPageUrl,// eslint-disable-line camelcase
-              NumberOfEmployees: enrichmentData.employer.numberOfEmployees,
-            });
-            salesforceAccountId = newAccountRecord.id;
-          }//ﬁ
-          // console.log('New account created!', salesforceAccountId);
+          salesforceAccountId = newAccountRecord.id;
         }//ﬁ
+        // console.log('New account created!', salesforceAccountId);
       }//ﬁ
 
-      // Only set leadSource on new contact records.
+      // Only add leadSource to valuesToSet if we're creating a new contact record.
       if(leadSource) {
         valuesToSet.LeadSource = leadSource;
       }
