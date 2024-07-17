@@ -84,7 +84,7 @@ module.exports.custom = {
 
 
   // For cleaning up LinkedIn URLs in the getEnriched and updateOrCreateContactAndAccount helpers.
-  RX_PROTOCOL_AND_COMMON_SUBDOMAINS: /^(https?\:\/\/)?(www\.|about\.|ch\.|uk\.|pl\.|ca\.|jp\.|im\.|fr\.|pt\.|vn\.)*/,
+  RX_PROTOCOL_AND_COMMON_SUBDOMAINS: /^(https?\:\/\/)?(www\.|about\.|ch\.|uk\.|pl\.|ca\.|jp\.|im\.|fr\.|pt\.|vn\.|pk\.|in\.|lu\.|mu\.|nl\.|np\.)*/,
 
   /**************************************************************************
   *                                                                         *
