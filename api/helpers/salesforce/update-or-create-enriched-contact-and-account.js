@@ -77,9 +77,6 @@ module.exports = {
     // Build a dictionary of values we'll update/create a contact record with.
     let valuesToSet = {};
 
-    if(linkedinUrl){
-      valuesToSet.LinkedIn_profile__c = linkedinUrl;// eslint-disable-line camelcase
-    }
     if(primaryBuyingSituation) {
       valuesToSet.Primary_buying_situation__c = primaryBuyingSituation;// eslint-disable-line camelcase
     }
@@ -101,7 +98,7 @@ module.exports = {
     // Search for an existing Contact record using the provided email address or linkedIn profile URL.
     let existingContactRecord = await salesforceConnection.sobject('Contact')
     .findOne({
-      LinkedIn_profile__c: linkedinUrl // eslint-disable-line camelcase
+      LinkedIn_profile__c: linkedinUrl.replace(sails.config.custom.RX_PROTOCOL_AND_COMMON_SUBDOMAINS, '') // eslint-disable-line camelcase
     });
 
     if(existingContactRecord) {
