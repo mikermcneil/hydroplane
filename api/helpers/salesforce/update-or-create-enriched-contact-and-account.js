@@ -100,6 +100,20 @@ module.exports = {
     .findOne({
       LinkedIn_profile__c: linkedinUrl.replace(sails.config.custom.RX_PROTOCOL_AND_COMMON_SUBDOMAINS, '') // eslint-disable-line camelcase
     });
+    if(!existingContactRecord){
+      // If we didn't find one on the first attempt. Look for a contact with a linkedIn profile URL that has not been formatted. (FUTURE: Remove this once we have a salesforce flow/validation rule to prevent unformatted Linkedin urls)
+      existingContactRecord = await salesforceConnection.sobject('Contact')
+      .findOne({
+        LinkedIn_profile__c: linkedinUrl // eslint-disable-line camelcase
+      });
+    }
+    // If we still didn't find one, try searching one last time for a Contact record that has a LinkedIn profile url wit ha trailing slash. (FUTURE: Remove this once we have a salesforce flow/validation rule to prevent unformatted Linkedin urls)
+    if(!existingContactRecord){
+      existingContactRecord = await salesforceConnection.sobject('Contact')
+      .findOne({
+        LinkedIn_profile__c: linkedinUrl + '/' // eslint-disable-line camelcase
+      });
+    }
 
     if(existingContactRecord) {
       // console.log(`Exisitng contact found! ${existingContactRecord.Id}`);
