@@ -67,6 +67,7 @@ module.exports = {
       organization,
       linkedinUrl,
       primaryBuyingSituation,
+      leadSource,
       psychologicalStage,
     });
 
