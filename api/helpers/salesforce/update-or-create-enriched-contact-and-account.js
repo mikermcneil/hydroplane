@@ -182,7 +182,7 @@ module.exports = {
 
       // Only add leadSource to valuesToSet if we're creating a new contact record.
       if(leadSource) {
-        valuesToSet.LeadSource = leadSource;
+        valuesToSet.Contact_source__c = leadSource;// eslint-disable-line camelcase
       }
       // console.log(`creating new Contact record.`)
       // Create a new Contact record for this person.
