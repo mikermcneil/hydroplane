@@ -34,7 +34,7 @@ module.exports = {
     leadSource: {
       type: 'string',
       isIn: [
-        'Outbound - Dripify',
+        'Dripify',
       ],
     },
   },

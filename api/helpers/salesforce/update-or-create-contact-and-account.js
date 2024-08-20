@@ -36,7 +36,7 @@ module.exports = {
         'Website - Sign up',
         'Website - Waitlist',
         'Website - swag request',
-        'Outbound - Dripify',
+        'Dripify',
       ],
     },
   },
