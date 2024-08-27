@@ -29,6 +29,10 @@ module.exports = {
         '6 - Has team buy-in'
       ]
     },
+    psychologicalStageChangeReason: {
+      type: 'string',
+      example: 'Website - Organic start flow'
+    },
     leadSource: {
       type: 'string',
       isIn: [
@@ -54,7 +58,7 @@ module.exports = {
   },
 
 
-  fn: async function ({emailAddress, linkedinUrl, firstName, lastName, organization, primaryBuyingSituation, psychologicalStage, leadSource}) {
+  fn: async function ({emailAddress, linkedinUrl, firstName, lastName, organization, primaryBuyingSituation, psychologicalStage, psychologicalStageChangeReason, leadSource}) {
 
     require('assert')(sails.config.custom.salesforceIntegrationUsername);
     require('assert')(sails.config.custom.salesforceIntegrationPasskey);
@@ -89,6 +93,9 @@ module.exports = {
     }
     if(psychologicalStage) {
       valuesToSet.Stage__c = psychologicalStage;// eslint-disable-line camelcase
+    }
+    if(psychologicalStageChangeReason) {
+      valuesToSet.Psystage_change_reason__c = psychologicalStageChangeReason;// eslint-disable-line camelcase
     }
 
     let existingContactRecord;
