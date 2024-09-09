@@ -29,6 +29,10 @@ module.exports = {
         '6 - Has team buy-in'
       ]
     },
+    description: {
+      type: 'string',
+      example: 'Submitted the Fleet swag typeform on 2024-09-09',
+    },
     psychologicalStageChangeReason: {
       type: 'string',
       example: 'Website - Organic start flow'
@@ -58,7 +62,7 @@ module.exports = {
   },
 
 
-  fn: async function ({emailAddress, linkedinUrl, firstName, lastName, organization, primaryBuyingSituation, psychologicalStage, psychologicalStageChangeReason, leadSource}) {
+  fn: async function ({emailAddress, linkedinUrl, firstName, lastName, organization, primaryBuyingSituation, psychologicalStage, psychologicalStageChangeReason, leadSource, description}) {
 
     require('assert')(sails.config.custom.salesforceIntegrationUsername);
     require('assert')(sails.config.custom.salesforceIntegrationPasskey);
@@ -97,6 +101,9 @@ module.exports = {
     if(psychologicalStageChangeReason) {
       valuesToSet.Psystage_change_reason__c = psychologicalStageChangeReason;// eslint-disable-line camelcase
     }
+    if(description) {
+      valuesToSet.Description = description;
+    }
 
     let existingContactRecord;
     // Search for an existing Contact record using the provided email address or linkedIn profile URL.
@@ -113,6 +120,25 @@ module.exports = {
     }
 
     if(existingContactRecord) {
+      // If a description was provided and the contact has a description, append the new description to it.
+      if(description && existingContactRecord.Description) {
+        valuesToSet.Description = existingContactRecord.Description + '\n' + description;
+      }
+      // Check the existing contact record's psychologicalStage.
+      if(psychologicalStage) {
+        let recordsCurrentPsyStage = existingContactRecord.Stage__c;
+        // Because each psychological stage starts with a number, we'll get the first character in the record's current psychological stage and the new psychological stage to make comparison easier.
+        let psyStageStageNumberToChangeTo = Number(psychologicalStage[0]);
+        let recordsCurrentPsyStageNumber = Number(recordsCurrentPsyStage[0]);
+        if(psyStageStageNumberToChangeTo < recordsCurrentPsyStageNumber) {
+          // If a psychological stage regression is caused by anything other than the start flow, remove the updated value.
+          // This is done to prevent automated psyStage regressions caused by users taking other action on the website. (e.g, Booking a meeting or requesting Fleet swag.)
+          if(psychologicalStageChangeReason && psychologicalStageChangeReason !== 'Website - Organic start flow') {
+            delete valuesToSet.Stage__c;
+            delete valuesToSet.Psystage_change_reason__c;
+          }
+        }
+      }
       // console.log(`Exisitng contact found! ${existingContactRecord.Id}`);
       // If we found an existing contact, we'll update it with the information provided.
       salesforceContactId = existingContactRecord.Id;
