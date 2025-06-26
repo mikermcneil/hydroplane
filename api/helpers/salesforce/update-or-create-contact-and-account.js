@@ -35,7 +35,7 @@ module.exports = {
       type: 'string',
       example: 'Website - Organic start flow'
     },
-    contactSource: {
+    leadSource: {
       type: 'string',
       isIn: [
         'Website - Contact forms',
@@ -78,7 +78,7 @@ module.exports = {
 
   },
 
-  fn: async function ({emailAddress, linkedinUrl, firstName, lastName, organization, jobTitle, primaryBuyingSituation, psychologicalStage, psychologicalStageChangeReason, contactSource, description, getStartedResponses, intentSignal}) {
+  fn: async function ({emailAddress, linkedinUrl, firstName, lastName, organization, jobTitle, primaryBuyingSituation, psychologicalStage, psychologicalStageChangeReason, leadSource, description, getStartedResponses, intentSignal}) {
     // Return undefined if we're not running in a production environment.
     if(sails.config.environment !== 'production') {
       sails.log.verbose('Skipping Salesforce integration...');
@@ -253,9 +253,9 @@ module.exports = {
         // console.log('New account created!', salesforceAccountId);
       }//ﬁ
 
-      // Only add contactSource to valuesToSet if we're creating a new contact record.
-      if(contactSource) {
-        valuesToSet.Contact_source__c = contactSource;// eslint-disable-line camelcase
+      // Only add leadSource to valuesToSet if we're creating a new contact record.
+      if(leadSource) {
+        valuesToSet.Contact_source__c = leadSource;// eslint-disable-line camelcase
       }
 
       // console.log(`creating new Contact record.`)
@@ -315,7 +315,7 @@ module.exports = {
           valuesToSet.Last_email_associated_by_fleetdm_com__c =  emailAddress;// eslint-disable-line camelcase
         }
         // If a contact souce was provided, since we found an existing contact when trying to create one, remove it from the valuesToSet.
-        if(contactSource) {
+        if(leadSource) {
           delete valuesToSet.Contact_source__c;
         }
 
