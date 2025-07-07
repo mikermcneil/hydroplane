@@ -41,6 +41,7 @@ module.exports = {
         'Website - Contact forms',
         'Website - Sign up',
         'Website - Newsletter',
+        'Website - Swag request',
         'LinkedIn - Comment',
         'LinkedIn - Reaction',
         'LinkedIn - Share',
