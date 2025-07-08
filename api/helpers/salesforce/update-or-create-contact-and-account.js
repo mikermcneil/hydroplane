@@ -46,6 +46,8 @@ module.exports = {
         'LinkedIn - Reaction',
         'LinkedIn - Share',
         'LinkedIn - Liked the LinkedIn company page',
+        'Dripify',
+        'Clay',
       ],
     },
     getStartedResponses: {
