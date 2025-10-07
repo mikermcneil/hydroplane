@@ -38,6 +38,10 @@ module.exports = {
     leadSource: {
       type: 'string',
       isIn: [
+        'Contacted - Specialist',
+        'Attended a call with Fleet',
+        'Event - Marketing-led event',
+        'Event - Sales-led event',
         'Website - Contact forms',
         'Website - Sign up',
         'Website - Newsletter',
@@ -46,9 +50,8 @@ module.exports = {
         'LinkedIn - Reaction',
         'LinkedIn - Share',
         'LinkedIn - Liked the LinkedIn company page',
-        'Event - Engaged with Fleetie at event',
-        'Dripify',
-        'Clay',
+        'Dripify - AE',
+        'Dripify - Specialist',
       ],
     },
     getStartedResponses: {
