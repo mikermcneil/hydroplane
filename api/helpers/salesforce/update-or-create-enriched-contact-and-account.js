@@ -187,7 +187,11 @@ module.exports = {
             Website: companyWebsite,
             NumberOfEmployees: numberOfEmployees,
             OwnerId: salesforceAccountOwnerId
-          });
+          },
+          {
+            headers: { 'Sforce-Duplicate-Rule-Header': 'allowSave=true' }
+          }
+          );
           salesforceAccountId = newAccountRecord.id;
         }//ﬁ
         // console.log('New account created!', salesforceAccountId);
@@ -206,7 +210,11 @@ module.exports = {
         FirstName: firstName,
         LastName: lastName,
         ...valuesToSet,
-      });
+      },
+      {
+        headers: { 'Sforce-Duplicate-Rule-Header': 'allowSave=true' }
+      }
+      );
       // console.log(`Created ${newContactRecord.id}`);
       salesforceContactId = newContactRecord.id;
     }//ﬁ
